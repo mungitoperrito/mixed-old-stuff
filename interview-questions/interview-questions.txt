@@ -1,0 +1,149 @@
+INTERVIEW QUESTIONS:
+
+Find pairs of numbers that sum to 10. 
+
+#include <stdio.h>
+int main()
+{
+    // Just doing one example instead of taking input
+    int inputs[] = { 2, 9, 13, 8, 1 };
+    
+    int length = sizeof(inputs) / sizeof(inputs[0]);
+    for(int i = 0 ; i < length - 1 ; i++)
+    {
+        for(int j = i + 1; j < length; j++)
+        {
+            if (inputs[i] + inputs[j] == 10)
+            {
+               printf("%d,%d ", inputs[i], inputs[j]);
+            }
+        }
+    }
+    
+    printf("\n");
+              
+    return 0;
+}
+The most obvious solution is sort of annoying to do in python because it doesn't have built in arrays. The candidate may index a list like this:
+
+TARGET_VALUE = 10
+for i in range(len(candidate_array)):
+    for j in range(i, len(candidate_array)):
+        if (TARGET_VALUE == candidate_array[i] + candidate_array[j]):
+            print("{},{} ".format(candidate_array[i], candidate_array[j]))
+
+Or the arrays can be faked by using while and a counter to index a list in a less 'pythonic' way. An example might look something like this:
+def find_pairs(inputs):
+    n = 0
+    m = n + 1
+    while n < len(inputs) - 1:
+        m = n + 1
+        while m < len(inputs):
+            if inputs[n] + inputs[m] == 10:
+                print("{},{} ".format(inputs[n], inputs[m]))
+            m += 1
+        n += 1
+            
+if "__main__" == __name__:
+    find_pairs([2,9,13,8,1])       
+
+
+
+Discussion:
+
+Developing psuedo code for this problem should be very fast, it really just requires understanding how to iterate over a nested loop. However people often struggle to understand what is being asked. A few example input / output pairs usually illustrates what is being asked.
+
+Things to watch for include:
+
+Does the candidate hard code a single example or create something more flexible?
+
+Does the candidate do any input validation?
+
+Many people comment, 'There must be a more efficient way'. (Ask why they think that the obvious solution has a problem (n*n runtime))
+
+Does the candidate index the inner loop at 0 or at i+1? (0 index will duplicate pairs)
+
+Does the candidate ask about order, repeated pairs (eg. 2,8 2,8), inverted pairs (eg. 1,9 9,1), negative numbers (eg. -1, 11), floats? (The answer to a given question is not very critical. Thinking enough about alternate cases to ask these questions is what we are looking for.)
+
+Does the candidate test the example given? (This should always be one of the tests)
+
+Does the candidate test large inputs? (How would they generate large inputs with predetermined results?)
+
+Does the candidate test non-integers? (Ask why, see if the candidate discusses type checking (C like) or duck typing (python))
+
+Does the candidate test impossible inputs? (array length 1, array length 0)
+
+Does the candidate automate the testing? (The tests should be automated. Ask about frameworks to make this easier)
+
+
+
+Compare Directories
+Question: How would you compare the contents of two directories? Print out with files are in just one directory and which are in both.
+
+Details: The idea is for the candidate to somehow read in a list of directory contents for dir1 and dir2. Once the candidate has both lists they should be compared to create three new lists. One list has files that only appear in dir1, a second list has files that only appear in dir2, and the third list contains the files that are common to both directories.
+
+Realistically, this question probably requires a bit of googling to get the module syntax for whatever file manipulation libraries the candidate wants to use. If the candidate asks about modules you can let the candidate assume the existence of a module that offers directory and path manipulations (just not a compare directories function). Try to get the candidate to ask rather than prompt that there might be a good library to use.
+
+Solution:
+
+There are many different ways to solve this problem. One solution is to create a nested for loop and walk the second list checking for each item in the first list. Then repeating the process walking the first list to check for the presence of each item in the second list. A fancier method is to read the lists into a dictionary using values that indicate membership in one or both lists. In python the second method might look like this:
+
+import os
+from collections import defaultdict
+
+
+def find_files(some_dir):
+    whole_list = os.listdir(some_dir)
+    files_only = []
+    
+    for entry in whole_list:
+        # os.path.isfile ignores size 0 files
+        if os.path.exists(entry):
+            files_only.append(entry)
+    
+    return files_only
+    
+def compare_lists(list1, list2):
+    combined_lists = defaultdict(int)
+    list1_only = []
+    list2_only = []
+    both_lists = []
+    
+    for item in list1:
+        combined_lists[item] += 1
+    
+    for item in list2:
+        combined_lists[item] -= 1
+        
+    for key in combined_lists:
+        if combined_lists[key] == 1:
+            list1_only.append(key)
+        elif combined_lists[key] == -1:
+            list2_only.append(key)
+        else:
+            both_lists.append(key)
+            
+    return (list1_only, list2_only, both_lists)
+        
+    
+if "__main__" == __name__:
+    cwd = os.getcwd()
+    l1 = find_files(os.path.join(cwd, "dir1"))
+    l2 = find_files(os.path.join(cwd, "dir2"))
+    print(compare_lists(l1, l2))
+
+Discussion:
+
+There are two components to this question, gathering the file information and then manipulating it. Candidates who work frequently on a systems level will have more familiarity with the first part. This is a good opportunity for the candidate to display those skills. It is definitely an asset if the candidate is well versed in using these modules. Candidates who are less familiar with the libraries in their language, but who know what sorts of libraries should exist and who understand how to leverage them will also be successful. Every candidate should be able to manage the second component - given two lists, create a diff. If the file manipulation part is too challenging, then see how well the candidate does when given both file lists as a starting point.
+
+Things to watch for include:
+
+Does the candidate make good use of libraries? (Knowing what should be out there, knowing how to include / import libraries)
+
+Does the candidte ask about differences working with linux / windows / osx filesystems? (eg. path seperators)
+
+Does the candidate ask about extending the comparison across machines? (This is only a good followup question if the initial part goes well)
+
+Does the candidate ask about extending the types of comparisons? (eg. to include sub-directories, links, file sizes, permissions)
+
+How would the candidate test the script? (Discuss unit tests for gathering and comparison functions, end to end testing, environment set up)
